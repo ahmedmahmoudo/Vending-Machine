@@ -29,8 +29,14 @@ export default class ProductController {
   }
 
   public async getProducts(req: Request, res: Response): Promise<void> {
+    const user = req.user;
     try {
-      const products = await this.productService.getAllProducts();
+      let products: ProductEntity[];
+      if (user && user.role === "seller") {
+        products = await this.productService.getSellerProducts(user.id);
+      } else {
+        products = await this.productService.getAllProducts();
+      }
       res.json(products);
     } catch (e) {
       ResponsesUtil.serverError(res);
@@ -43,8 +49,15 @@ export default class ProductController {
     try {
       const product = await this.productService.createProduct(dto, user!);
       res.json(product);
-    } catch (e) {
-      ResponsesUtil.serverError(res);
+    } catch (e: any) {
+      if (e.message === ProductErrorsEnum.INCORRECT_PRODUCT_COST) {
+        ResponsesUtil.badInput(res, {
+          message:
+            "Invalid cost for product, cost must be between 5, 10, 20, 50, 100",
+        });
+      } else {
+        ResponsesUtil.serverError(res);
+      }
     }
   }
 
@@ -63,6 +76,11 @@ export default class ProductController {
       if (e.message === ProductErrorsEnum.NO_ACCESS) {
       } else if (e.message === ProductErrorsEnum.PRODUCT_DOES_NOT_EXIST) {
         this.notFound(res);
+      } else if (e.message === ProductErrorsEnum.INCORRECT_PRODUCT_COST) {
+        ResponsesUtil.badInput(res, {
+          message:
+            "Invalid cost for product, cost must be between 5, 10, 20, 50, 100",
+        });
       } else {
         ResponsesUtil.serverError(res);
       }

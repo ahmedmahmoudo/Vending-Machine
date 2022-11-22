@@ -17,11 +17,7 @@ export default class App {
   private productModule: ProductModule;
   private server: http.Server;
   constructor() {
-    this.app.use(
-      cors({
-        allowedHeaders: ["Authorization"],
-      })
-    );
+    this.app.use(cors());
     this.app.use(bodyParser.json());
     this.database = new Database();
   }

@@ -39,7 +39,11 @@ export default class AuthController {
     }
     try {
       const user = await this.userService.createUser(dto);
-      res.json(user);
+      const loginResponse = await this.userService.login({
+        username: dto.username,
+        password: dto.password,
+      });
+      res.json(loginResponse);
     } catch (e: any) {
       if (e.message === UserErrorsEnum.USER_EXISTS) {
         res

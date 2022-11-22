@@ -4,6 +4,7 @@ enum ProductErrorsEnum {
   NOT_ENOUGH_MONEY = "notEnoughMoney",
   UPDATE_WENT_WRONG = "updateWentWrong",
   NO_ACCESS = "noAccess",
+  INCORRECT_PRODUCT_COST = "incorrectProductCost",
 }
 
 export default ProductErrorsEnum;

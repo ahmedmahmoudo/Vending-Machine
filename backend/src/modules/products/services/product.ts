@@ -20,6 +20,10 @@ export default class ProductService {
   ): Promise<ProductEntity> {
     const sellerId = seller.id;
     const { productName, amountAvailable, cost } = dto;
+    const canBuyProduct = cost % 5 === 0;
+    if (!canBuyProduct) {
+      throw new Error(ProductErrorsEnum.INCORRECT_PRODUCT_COST);
+    }
     const existingProduct = await this.productRepository.findOneBy({
       productName,
       sellerId,
@@ -73,6 +77,12 @@ export default class ProductService {
   ): Promise<ProductEntity> {
     const product = await this.getProduct(productId);
     if (product.sellerId === seller.id) {
+      if (dto.cost) {
+        const canBuyProduct = dto.cost % 5 === 0;
+        if (!canBuyProduct) {
+          throw new Error(ProductErrorsEnum.INCORRECT_PRODUCT_COST);
+        }
+      }
       const updatedResults = await this.productRepository.update(productId, {
         ...dto,
       });
