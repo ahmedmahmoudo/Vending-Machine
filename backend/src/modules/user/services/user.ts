@@ -56,7 +56,10 @@ export default class UserService {
       const { password, ...rest } = user;
       const token = jwt.sign(
         rest,
-        ConfigUtil.getConfig("tokenSecret") as string
+        ConfigUtil.getConfig("tokenSecret") as string,
+        {
+          expiresIn: "1d",
+        }
       );
       return {
         id: user.id,
